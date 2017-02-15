@@ -2,6 +2,9 @@ module Trees
 
 import Base: isempty, getindex, setindex!, search
 
+# Implement iteration interface
+import Base: start, next, done, iteratorsize
+
 export  Tree,
         TreeNode,
         node_key,
@@ -117,5 +120,29 @@ function setindex!{K, V}(t::Tree{K, V}, value::V, key::K)
     add(root, TreeNode(key, value))
   end
 end
+
+# Iteration interface
+function start{K, V}(t::Tree{K, V})
+  if isnull(t.root)
+    TreeNode{K, V}[]
+  else
+    [get(t.root)]
+  end
+end
+
+function next{K, V}(t::Tree{K, V}, stack::Vector{TreeNode{K, V}})
+	n = pop!(stack)
+	if has_left(n)
+		push!(stack, left_node(n))
+	end
+	if has_right(n)
+		push!(stack, right_node(n))
+	end
+	(node_key(n), node_value(n)), stack
+end
+
+done{K, V}(t::Tree{K, V}, stack::Vector{TreeNode{K, V}}) = isempty(stack)
+
+iteratorsize(t::Tree) =  Base.SizeUnknown()
 
 end # module
