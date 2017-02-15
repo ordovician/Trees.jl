@@ -100,7 +100,12 @@ function getindex{K,V}(t::Tree{K,V}, key::K)
   if isnull(t.root)
     throw(KeyError(key))
   else
-    search(get(t.root), key)
+    n = search(get(t.root), key)
+    if isnull(n)
+      throw(KeyError(key))
+    else
+      node_value(get(n))
+    end
   end
 end
 
