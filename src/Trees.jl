@@ -59,12 +59,12 @@ function search{K, V}(root::TreeNode{K, V}, key::K)
   if node_key(root) == key
 		return Nullable(root)
 	elseif value < root.value
-		if hasleft(root)
 			return search(root.left, value)
+		if has_left(root)
 		end
 	else
-		if hasright(root)
 			return search(root.right, value)
+		if has_right(root)
 		end
 	end
 	Nullable{TreeNode{k, V}}()
