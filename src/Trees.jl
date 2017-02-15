@@ -34,6 +34,14 @@ node_value{K, V}(n::TreeNode{K, V}) = n.value
 left_node(n::TreeNode)  = get(n.left)
 right_node(n::TreeNode) = get(n.right)
 
+function set_left_node!{K, V}(parent::TreeNode{K, V}, child::TreeNode{K, V})
+  parent.left = Nullable(child)
+end
+
+function set_right_node!{K, V}(parent::TreeNode{K, V}, child::TreeNode{K, V})
+  parent.right = Nullable(child)
+end
+
 has_left(n::TreeNode) = !isnull(n.left)
 has_right(n::TreeNode) = !isnull(n.right)
 
@@ -44,13 +52,13 @@ function add{K, V}(root::TreeNode{K, V}, child::TreeNode{K, V})
     if has_left(root)
       add(left_node(root), child)
     else
-      root.left = node
+      set_left_node!(root, child)
     end
   else
     if has_right(root)
-        add(right_node(root))
+        add(right_node(root), child)
       else
-        root.right = node
+        set_right_node!(root, child)
     end
   end
 end
@@ -58,13 +66,13 @@ end
 function search{K, V}(root::TreeNode{K, V}, key::K)
   if node_key(root) == key
 		return Nullable(root)
-	elseif value < root.value
-			return search(root.left, value)
+	elseif key < node_key(root)
 		if has_left(root)
+			return search(left_node(root), key)
 		end
 	else
-			return search(root.right, value)
 		if has_right(root)
+			return search(right_node(root), key)
 		end
 	end
 	Nullable{TreeNode{k, V}}()
