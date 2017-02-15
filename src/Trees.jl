@@ -34,8 +34,8 @@ node_value{K, V}(n::TreeNode{K, V}) = n.value
 left_node(n::TreeNode)  = get(n.left)
 right_node(n::TreeNode) = get(n.right)
 
-has_left(n::TreeNode) = isnull(n.left)
-has_right(n::TreeNode) = isnull(n.right)
+has_left(n::TreeNode) = !isnull(n.left)
+has_right(n::TreeNode) = !isnull(n.right)
 
 function add{K, V}(root::TreeNode{K, V}, child::TreeNode{K, V})
   if node_key(child) == node_key(root)
