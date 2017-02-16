@@ -64,7 +64,7 @@ has_children(n::TreeNode) = has_left(n) || has_right(n)
 function show(io::IO, n::TreeNode, depth::Integer)
   print(io, "  "^depth)
   show(io, node_key(n))
-  print(" => ")
+  print(io, " => ")
   show(io, node_value(n))
   println(io)
   if has_children(n)
@@ -220,10 +220,10 @@ function show{K, V}(io::IO, t::Tree{K, V})
   limit = 10 # Max elements to show
   for (k, v) in xs
     print(io, "  ")
-    show(k)
+    show(io, k)
     print(io, " => ")
-    show(v)
-    n < len && println()
+    show(io, v)
+    n < len && println(io)
     n >= limit && (print(io, "  …"); break)
     n += 1
   end
