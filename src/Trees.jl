@@ -12,7 +12,9 @@ export  Tree,
         left_child,
         right_child,
         has_left,
-        has_right
+        has_right,
+        add!,
+        search
 
 "A tree node with a key and value"
 type TreeNode{K, V}
@@ -93,18 +95,18 @@ Adds or replaces a node.
 If node with given key already exists,
 it will replace previous value in that node.
 """
-function add{K, V}(root::TreeNode{K, V}, child::TreeNode{K, V})
+function add!{K, V}(root::TreeNode{K, V}, child::TreeNode{K, V})
   if node_key(child) == node_key(root)
     root.value = node_value(child)
   elseif node_key(child) < node_key(root)
     if has_left(root)
-      add(left_child(root), child)
+      add!(left_child(root), child)
     else
       set_left_child!(root, child)
     end
   else
     if has_right(root)
-        add(right_child(root), child)
+        add!(right_child(root), child)
       else
         set_right_child!(root, child)
     end
@@ -150,7 +152,7 @@ function Tree(ps)
   root = TreeNode(k, v)
   for (k, v) in ps[2:end]
     n = TreeNode(k, v)
-    add(root, n)
+    add!(root, n)
   end
   T = eltype(ps)
   K = pair_key(T)
@@ -181,7 +183,7 @@ function setindex!{K, V}(t::Tree{K, V}, value::V, key::K)
     t.root = Nullable(TreeNode(key, value))
   else
     root = get(t.root)
-    add(root, TreeNode(key, value))
+    add!(root, TreeNode(key, value))
   end
 end
 
