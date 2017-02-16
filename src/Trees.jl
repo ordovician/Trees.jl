@@ -21,14 +21,13 @@ type TreeNode{K, V}
   key::K
   value::V
 
+  parent::Nullable{TreeNode{K, V}}
   left::Nullable{TreeNode{K, V}}
   right::Nullable{TreeNode{K, V}}
 
   function TreeNode(key::K, value::V)
-    new(key,
-        value,
-        Nullable{TreeNode{K, V}}(),
-        Nullable{TreeNode{K, V}}())
+    null = Nullable{TreeNode{K, V}}()
+    new(key, value, null, null, null)
   end
 end
 
@@ -39,18 +38,25 @@ node_key{K, V}(n::TreeNode{K, V})   = n.key
 
 "The value we are storing in the tree which we retrieve by giving its key"
 node_value{K, V}(n::TreeNode{K, V}) = n.value
+node_parent(n::TreeNode) = get(n.parent)
 left_child(n::TreeNode)  = get(n.left)
 right_child(n::TreeNode) = get(n.right)
 
+function set_parent!(child::TreeNode, parent::TreeNode)
+  child.parent = Nullable(parent)
+end
+
 "Give the parent node a left child node"
-function set_left_child!{K, V}(parent::TreeNode{K, V}, child::TreeNode{K, V})
+function set_left_child!(parent::TreeNode, child::TreeNode)
   parent.left = Nullable(child)
 end
 
 "Give the parent node a right child node"
-function set_right_child!{K, V}(parent::TreeNode{K, V}, child::TreeNode{K, V})
+function set_right_child!(parent::TreeNode, child::TreeNode)
   parent.right = Nullable(child)
 end
+
+has_parent(n::TreeNode) = !isnull(n.parent)
 
 "Does tree node have a left child?"
 has_left(n::TreeNode) = !isnull(n.left)
