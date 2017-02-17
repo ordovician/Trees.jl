@@ -41,13 +41,17 @@ function set_parent!(child::TreeNode, parent::TreeNode)
 end
 
 "Give the parent node a left child node"
-function set_left_child!(parent::TreeNode, child::TreeNode)
+function set_left_child!{K, V}(parent::TreeNode{K, V}, child::TreeNode{K, V})
+  has_left(parent) && (left_child(parent).parent = Nullable{K, V}())
   parent.left = Nullable(child)
+  child.parent = Nullable(parent)
 end
 
 "Give the parent node a right child node"
-function set_right_child!(parent::TreeNode, child::TreeNode)
+function set_right_child!{K, V}(parent::TreeNode{K, V}, child::TreeNode{K, V})
+  has_right(parent) && (right_child(parent).parent = Nullable{K, V}())
   parent.right = Nullable(child)
+  child.parent = Nullable(parent)
 end
 
 has_parent(n::TreeNode) = !isnull(n.parent)
@@ -127,4 +131,22 @@ function search{K, V}(root::TreeNode{K, V}, key::K)
 		end
 	end
 	Nullable{TreeNode{k, V}}()
+end
+
+function rotate_left(n::TreeNode)
+  @assert has_right(n) "Can't rotate left if there is no right child"
+  m = right_child(n)
+  t2 = m.left
+
+  set_left_child!(m, n)
+  n.right = t2
+
+  p = node_parent(n)
+
+end
+
+function rotate_right(n::TreeNode)
+  @assert has_left(n) "Can't rotate left if there is no left child"
+
+
 end
