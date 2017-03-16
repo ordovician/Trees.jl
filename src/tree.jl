@@ -104,3 +104,44 @@ function show{K, V}(io::IO, t::Tree{K, V})
     n += 1
   end
 end
+
+function swap_child_of_parent(t::Tree, a::TreeNode, b::TreeNode)
+    if isnull(a.parent)
+        t.root = Nullable(b)
+    else
+        p = node_parent(a)
+        if !isnull(p.left) && get(p.left) == a
+            set_left_child!(p, b)
+        else
+            set_right_child!(p, b)
+        end    
+    end    
+end
+
+# Based on page 240 in Algorithms in a Nutshell
+#    
+#      a               b
+#     / \      -->    / \
+#    t1  b           a   t3
+#       / \         / \
+#      t2  t3      t1  t2
+#    
+function rotate_left(t::Tree, a::TreeNode)
+    @assert has_right(a) "Can't rotate left if there is no right child"
+    b = right_child(a)
+    t2 = b.left
+    swap_child_of_parent(t, a, b)
+    
+    set_left_child!(b, a)
+    set_right_child!(a, t2)
+end
+
+function rotate_right(t::Tree, b::TreeNode)
+    @assert has_left(b) "Can't rotate left if there is no left child"
+    a = left_child(b)
+    t2 = a.right
+    swap_child_of_parent(t, b, a)
+    
+    set_right_child!(a, b)
+    set_left_child!(b, t2)
+end
