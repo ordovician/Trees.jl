@@ -17,10 +17,10 @@ end
 
 # I don't know any other way to get hold of the
 # individual type parameters held in Tuple and Pair
- pair_key{K, V}(::Type{Pair{K, V}}) = K
- pair_value{K, V}(::Type{Pair{K, V}}) = V
- pair_key{K, V}(::Type{Tuple{K, V}}) = K
- pair_value{K, V}(::Type{Tuple{K, V}}) = V
+pair_key{K, V}(::Type{Pair{K, V}}) = K
+pair_value{K, V}(::Type{Pair{K, V}}) = V
+pair_key{K, V}(::Type{Tuple{K, V}}) = K
+pair_value{K, V}(::Type{Tuple{K, V}}) = V
 
 "Make tree from pair of values, just like a dictionary"
 function Tree(ps)
