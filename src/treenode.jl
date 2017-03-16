@@ -12,17 +12,18 @@ export  TreeNode,
 
 "A tree node with a key and value"
 type TreeNode{K, V}
-  key::K
-  value::V
+    key::K
+    value::V
 
-  parent::Nullable{TreeNode{K, V}}
-  left::Nullable{TreeNode{K, V}}
-  right::Nullable{TreeNode{K, V}}
+    parent::Nullable{TreeNode{K, V}}
+    left::Nullable{TreeNode{K, V}}
+    right::Nullable{TreeNode{K, V}}
 
-  function TreeNode(key::K, value::V)
-    null = Nullable{TreeNode{K, V}}()
-    new(key, value, null, null, null)
-  end
+    black::Bool
+    function TreeNode(key::K, value::V)
+        null = Nullable{TreeNode{K, V}}()
+        new(key, value, null, null, null)
+    end
 end
 
 TreeNode{K, V}(key::K, value::V) = TreeNode{K, V}(key, value)
