@@ -40,18 +40,51 @@ function set_parent!(child::TreeNode, parent::TreeNode)
   child.parent = Nullable(parent)
 end
 
-"Give the parent node a left child node"
-function set_left_child!{K, V}(parent::TreeNode{K, V}, child::TreeNode{K, V})
-  has_left(parent) && (left_child(parent).parent = Nullable{K, V}())
-  parent.left = Nullable(child)
-  child.parent = Nullable(parent)
+function detach_left_child{K, V}(parent::TreeNode{K, V})
+    if has_left(parent)
+        left_child(parent).parent = Nullable{TreeNode{K, V}}()
+    end
 end
 
-"Give the parent node a right child node"
+function detach_right_child{K, V}(parent::TreeNode{K, V})
+    if has_right(parent)
+        right_child(parent).parent = Nullable{TreeNode{K, V}}()
+    end
+end
+
+
+"Give the parent node a left child node, updating parent pointer and existing left child"
+function set_left_child!{K, V}(parent::TreeNode{K, V}, child::TreeNode{K, V})
+    detach_left_child(parent)
+    parent.left = Nullable(child)
+    child.parent = Nullable(parent)
+end
+
+function set_left_child!{K, V}(parent::TreeNode{K, V}, child::Nullable{TreeNode{K, V}})
+    if !isnull(child)
+        set_left_child!(parent, get(child))
+    else
+        detach_left_child(parent)
+        parent.left = child
+        child.parent = Nullable(parent)        
+    end
+end
+
+"Give the parent node a right child node, updating parent pointer and existing right child"
 function set_right_child!{K, V}(parent::TreeNode{K, V}, child::TreeNode{K, V})
-  has_right(parent) && (right_child(parent).parent = Nullable{K, V}())
-  parent.right = Nullable(child)
-  child.parent = Nullable(parent)
+    detach_right_child(parent)
+    parent.right = Nullable(child)
+    child.parent = Nullable(parent)
+end
+
+function set_right_child!{K, V}(parent::TreeNode{K, V}, child::Nullable{TreeNode{K, V}})
+    if !isnull(child)
+        set_right_child!(parent, get(child))
+    else
+        detach_right_child(parent)
+        parent.right = child
+        child.parent = Nullable(parent)        
+    end
 end
 
 has_parent(n::TreeNode) = !isnull(n.parent)
@@ -133,20 +166,3 @@ function search{K, V}(root::TreeNode{K, V}, key::K)
 	Nullable{TreeNode{k, V}}()
 end
 
-function rotate_left(n::TreeNode)
-  @assert has_right(n) "Can't rotate left if there is no right child"
-  m = right_child(n)
-  t2 = m.left
-
-  set_left_child!(m, n)
-  n.right = t2
-
-  p = node_parent(n)
-
-end
-
-function rotate_right(n::TreeNode)
-  @assert has_left(n) "Can't rotate left if there is no left child"
-
-
-end
