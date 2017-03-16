@@ -80,7 +80,7 @@ function next{K, V}(t::Tree{K, V}, stack::Vector{TreeNode{K, V}})
 	if has_right(n)
 		push!(stack, right_child(n))
 	end
-	(node_key(n), node_value(n)), stack
+	(node_key(n) => node_value(n)), stack
 end
 
 done{K, V}(t::Tree{K, V}, stack::Vector{TreeNode{K, V}}) = isempty(stack)
