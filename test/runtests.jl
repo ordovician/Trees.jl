@@ -22,8 +22,10 @@ include("testdata.jl")
   function test_data{K, V}(tester::Function, data::Vector{Vector{Tuple{K, V}}})
     for xs in data
       t = Tree(xs)
+      d = Dict(xs)
       ys = collect(t)
-      tester(sort(xs), sort(ys))
+      zs = collect(d)
+      tester(sort(zs), sort(ys))
     end
   end
 
@@ -39,8 +41,7 @@ include("testdata.jl")
     for (k, v) in xs
       t2[k] = v
     end
-    ys = collect(t2)
-    @test sort(xs) == sort(ys)
+    @test sort(collect(d)) == sort(collect(t2))
   end
 
   @testset "Tree What Goes In Goes Out" begin
@@ -51,7 +52,7 @@ include("testdata.jl")
       @test xs == ys
     end
 
-    data = [unique(rand_pairs()) for i in 1:10]
+    data = [rand_pairs() for i in 1:10]
 
     test_data(data) do xs, ys
       @test xs == ys
@@ -67,7 +68,7 @@ include("testdata.jl")
 
     data = [xs1, xs2]
     test_data(data) do xs, ys
-      @test_broken xs == ys
+      @test xs == ys
     end
   end
 
@@ -78,7 +79,7 @@ include("testdata.jl")
 
     data = map(unique, [xs1, xs2])
     test_data(data) do xs, ys
-      @test_broken xs == ys
+      @test xs == ys
     end
   end
 
