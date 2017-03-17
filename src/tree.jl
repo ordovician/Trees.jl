@@ -3,18 +3,6 @@ import Base: isempty, getindex, setindex!, show
 # Implement iteration interface
 import Base: start, next, done, iteratorsize
 
-export  Tree
-
-"""
-A facade to the binary search tree,
-presenting it as a sorted map or dictionary
-"""
-type Tree{K, V}
-  root::Nullable{TreeNode{K,V}}
-  Tree{K, V}(root::TreeNode{K,V}) = new(Nullable(root))
-  Tree() = new(Nullable{TreeNode{K,V}}())
-end
-
 # I don't know any other way to get hold of the
 # individual type parameters held in Tuple and Pair
 pair_key{K, V}(::Type{Pair{K, V}}) = K
@@ -72,7 +60,7 @@ function start{K, V}(t::Tree{K, V})
   end
 end
 
-function next{K, V}(t::Tree{K, V}, stack::Vector{TreeNode{K, V}})
+function next(t::Tree, stack::Vector)
 	n = pop!(stack)
 	if has_left(n)
 		push!(stack, left_child(n))
@@ -83,7 +71,7 @@ function next{K, V}(t::Tree{K, V}, stack::Vector{TreeNode{K, V}})
 	(node_key(n) => node_value(n)), stack
 end
 
-done{K, V}(t::Tree{K, V}, stack::Vector{TreeNode{K, V}}) = isempty(stack)
+done(t::Tree, stack::Vector) = isempty(stack)
 
 iteratorsize(t::Tree) =  Base.SizeUnknown()
 
@@ -105,7 +93,7 @@ function show{K, V}(io::IO, t::Tree{K, V})
   end
 end
 
-function swap_child_of_parent(t::Tree, a::TreeNode, b::TreeNode)
+function swap_child_of_parent(t::Tree, a::AbstractTreeNode, b::AbstractTreeNode)
     if isnull(a.parent)
         t.root = Nullable(b)
     else
@@ -126,7 +114,7 @@ end
 #       / \         / \
 #      t2  t3      t1  t2
 #    
-function rotate_left(t::Tree, a::TreeNode)
+function rotate_left(t::Tree, a::AbstractTreeNode)
     @assert has_right(a) "Can't rotate left if there is no right child"
     b = right_child(a)
     t2 = b.left
@@ -136,7 +124,7 @@ function rotate_left(t::Tree, a::TreeNode)
     set_right_child!(a, t2)
 end
 
-function rotate_right(t::Tree, b::TreeNode)
+function rotate_right(t::Tree, b::AbstractTreeNode)
     @assert has_left(b) "Can't rotate left if there is no left child"
     a = left_child(b)
     t2 = a.right

@@ -1,17 +1,20 @@
 module Trees
 
-import Base: map
-
-# Helper for dealing with Nullable
-function map(f::Function, n::Nullable)
-    if isnull(n)
-        n
-    else 
-        Nullable(f(get(n)))
-    end
-end
+export Tree
 
 include("treenode.jl")
+
+"""
+A facade to the binary search tree,
+presenting it as a sorted map or dictionary
+"""
+type Tree{K, V}
+  root::Nullable{TreeNode{K,V}}
+  Tree{K, V}(root::TreeNode{K,V}) = new(Nullable(root))
+  Tree() = new(Nullable{TreeNode{K,V}}())
+end
+
+include("red-black.jl")
 include("tree.jl")
 
 function test_tree()
