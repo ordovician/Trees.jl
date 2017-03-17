@@ -27,7 +27,7 @@ end
 Tree{K,V}(ps::Pair{K,V}...) = Tree(ps)
 Tree{K,V}(ps::Tuple{K,V}...) = Tree(ps)
 
-isempty(t::Tree) = isnull(t.root)
+isempty(t::AbstractTree) = isnull(t.root)
 
 function getindex{K,V}(t::Tree{K,V}, key::K)
   if isnull(t.root)
@@ -52,15 +52,15 @@ function setindex!{K, V}(t::Tree{K, V}, value::V, key::K)
 end
 
 # Iteration interface
-function start{K, V}(t::Tree{K, V})
+function start(t::AbstractTree)
   if isnull(t.root)
-    TreeNode{K, V}[]
+    typeof(T)[]
   else
     [get(t.root)]
   end
 end
 
-function next(t::Tree, stack::Vector)
+function next(t::AbstractTree, stack::Vector)
 	n = pop!(stack)
 	if has_left(n)
 		push!(stack, left_child(n))
@@ -71,12 +71,12 @@ function next(t::Tree, stack::Vector)
 	(node_key(n) => node_value(n)), stack
 end
 
-done(t::Tree, stack::Vector) = isempty(stack)
+done(t::AbstractTree, stack::Vector) = isempty(stack)
 
-iteratorsize(t::Tree) =  Base.SizeUnknown()
+iteratorsize(t::AbstractTree) =  Base.SizeUnknown()
 
 
-function show{K, V}(io::IO, t::Tree{K, V})
+function show(io::IO, t::AbstractTree)
   xs = collect(t)
   len = length(xs)
   println(io, "Tree{$K, $V} with $len entries:")
@@ -93,7 +93,7 @@ function show{K, V}(io::IO, t::Tree{K, V})
   end
 end
 
-function swap_child_of_parent(t::Tree, a::AbstractTreeNode, b::AbstractTreeNode)
+function swap_child_of_parent(t::AbstractTree, a::AbstractTreeNode, b::AbstractTreeNode)
     if isnull(a.parent)
         t.root = Nullable(b)
     else
@@ -114,7 +114,7 @@ end
 #       / \         / \
 #      t2  t3      t1  t2
 #    
-function rotate_left(t::Tree, a::AbstractTreeNode)
+function rotate_left(t::AbstractTree, a::AbstractTreeNode)
     @assert has_right(a) "Can't rotate left if there is no right child"
     b = right_child(a)
     t2 = b.left
@@ -124,7 +124,7 @@ function rotate_left(t::Tree, a::AbstractTreeNode)
     set_right_child!(a, t2)
 end
 
-function rotate_right(t::Tree, b::AbstractTreeNode)
+function rotate_right(t::AbstractTree, b::AbstractTreeNode)
     @assert has_left(b) "Can't rotate left if there is no left child"
     a = left_child(b)
     t2 = a.right

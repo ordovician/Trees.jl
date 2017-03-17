@@ -14,7 +14,7 @@ export  AbstractTreeNode,
 abstract AbstractTreeNode{K, V}
 
 "A tree node with a key and value"
-type TreeNode{K, V} <:  AbstractTreeNode{K, V}
+type TreeNode{K, V} <: AbstractTreeNode{K, V}
     key::K
     value::V
 
@@ -22,10 +22,9 @@ type TreeNode{K, V} <:  AbstractTreeNode{K, V}
     left::Nullable{TreeNode{K, V}}
     right::Nullable{TreeNode{K, V}}
 
-    black::Bool
     function TreeNode(key::K, value::V)
         null = Nullable{TreeNode{K, V}}()
-        new(key, value, null, null, null, true)
+        new(key, value, null, null, null)
     end
 end
 

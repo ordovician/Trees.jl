@@ -1,20 +1,30 @@
 module Trees
 
-export Tree
+export AbstractTree, Tree, RBTree
 
 include("treenode.jl")
+
+abstract AbstractTree{K, V}
 
 """
 A facade to the binary search tree,
 presenting it as a sorted map or dictionary
 """
-type Tree{K, V}
+type Tree{K, V} <: AbstractTree{K, V}
   root::Nullable{TreeNode{K,V}}
   Tree{K, V}(root::TreeNode{K,V}) = new(Nullable(root))
   Tree() = new(Nullable{TreeNode{K,V}}())
 end
 
 include("red-black.jl")
+
+type RBTree{K, V} <: AbstractTree{K, V}
+    root::Nullable{RBTreeNode{K,V}}
+    RBTree{K, V}(root::RBTreeNode{K,V}) = new(Nullable(root))
+    RBTree() = new(Nullable{RBTreeNode{K,V}}())
+end
+
+
 include("tree.jl")
 
 function test_tree()
