@@ -1,6 +1,7 @@
 module Trees
 
 export AbstractTree, Tree, RBTree
+import Base: eltype
 
 include("treenode.jl")
 
@@ -24,6 +25,7 @@ type RBTree{K, V} <: AbstractTree{K, V}
     RBTree() = new(Nullable{RBTreeNode{K,V}}())
 end
 
+eltype(t::Type{RBTree}) = RBTreeNode
 
 include("tree.jl")
 

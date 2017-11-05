@@ -1,4 +1,4 @@
-import Base: isempty, getindex, setindex!, show
+import Base: isempty, getindex, setindex!, show, eltype
 
 # Implement iteration interface
 import Base: start, next, done, iteratorsize
@@ -10,26 +10,40 @@ pair_value{K, V}(::Type{Pair{K, V}}) = V
 pair_key{K, V}(::Type{Tuple{K, V}}) = K
 pair_value{K, V}(::Type{Tuple{K, V}}) = V
 
-"Make tree from pair of values, just like a dictionary"
-function Tree(ps)
-  k, v = ps[1]
-  root = TreeNode(k, v)
-  for (k, v) in ps[2:end]
-    n = TreeNode(k, v)
-    add!(root, n)
-  end
-  T = eltype(ps)
-  K = pair_key(T)
-  V = pair_value(T)
-  Tree{K, V}(root)
+eltype(t::Type{Tree}) = TreeNode
+
+function make_tree{T<:AbstractTree}(::Type{T}, ps::Vector)
+    k, v = ps[1]
+    root = eltype(T){typeof(k), typeof(v)}(k, v)
+    for (k, v) in ps[2:end]
+      n = eltype(T){typeof(k), typeof(v)}(k, v)
+      add!(root, n)
+    end
+    T{typeof(k), typeof(v)}(root)    
 end
 
-Tree{K,V}(ps::Pair{K,V}...) = Tree(ps)
-Tree{K,V}(ps::Tuple{K,V}...) = Tree(ps)
+Tree(ps::Vector) = make_tree(Tree, ps)
+
+# "Make tree from pair of values, just like a dictionary"
+# function Tree(ps)
+#   k, v = ps[1]
+#   root = TreeNode(k, v)
+#   for (k, v) in ps[2:end]
+#     n = TreeNode(k, v)
+#     add!(root, n)
+#   end
+#   T = eltype(ps)
+#   K = pair_key(T)
+#   V = pair_value(T)
+#   Tree{K, V}(root)
+# end
+
+Tree{K,V}(ps::Pair{K,V}...) = Tree{K, V}(ps)
+Tree{K,V}(ps::Tuple{K,V}...) = Tree{K, V}(ps)
 
 isempty(t::AbstractTree) = isnull(t.root)
 
-function getindex{K,V}(t::Tree{K,V}, key::K)
+function getindex(t, key)
   if isnull(t.root)
     throw(KeyError(key))
   else
@@ -42,9 +56,9 @@ function getindex{K,V}(t::Tree{K,V}, key::K)
   end
 end
 
-function setindex!{K, V}(t::Tree{K, V}, value::V, key::K)
+function setindex!{K, V}(t::AbstractTree{K, V}, value::V, key::K)
   if isnull(t.root)
-    t.root = Nullable(TreeNode(key, value))
+    t.root = Nullable(eltype(t)(key, value))
   else
     root = get(t.root)
     add!(root, TreeNode(key, value))
@@ -76,7 +90,7 @@ done(t::AbstractTree, stack::Vector) = isempty(stack)
 iteratorsize(t::AbstractTree) =  Base.SizeUnknown()
 
 
-function show(io::IO, t::AbstractTree)
+function show{K, V}(io::IO, t::AbstractTree{K, V})
   xs = collect(t)
   len = length(xs)
   println(io, "Tree{$K, $V} with $len entries:")
