@@ -9,18 +9,18 @@ export  Tree
 A facade to the binary search tree,
 presenting it as a sorted map or dictionary
 """
-type Tree{K, V}
+mutable struct Tree{K, V}
   root::Nullable{TreeNode{K,V}}
-  Tree{K, V}(root::TreeNode{K,V}) = new(Nullable(root))
-  Tree() = new(Nullable{TreeNode{K,V}}())
+  Tree{K,V}(root::TreeNode{K,V}) where {K, V} = new(Nullable(root))
+  Tree{K,V}() where {K, V} = new(Nullable{TreeNode{K,V}}())
 end
 
 # I don't know any other way to get hold of the
 # individual type parameters held in Tuple and Pair
-pair_key{K, V}(::Type{Pair{K, V}}) = K
-pair_value{K, V}(::Type{Pair{K, V}}) = V
-pair_key{K, V}(::Type{Tuple{K, V}}) = K
-pair_value{K, V}(::Type{Tuple{K, V}}) = V
+pair_key(  ::Type{ Pair{K, V}}) where {K, V} = K
+pair_value(::Type{ Pair{K, V}}) where {K, V} = V
+pair_key(  ::Type{Tuple{K, V}}) where {K, V} = K
+pair_value(::Type{Tuple{K, V}}) where {K, V} = V
 
 "Make tree from pair of values, just like a dictionary"
 function Tree(ps)
@@ -36,12 +36,12 @@ function Tree(ps)
   Tree{K, V}(root)
 end
 
-Tree{K,V}(ps::Pair{K,V}...) = Tree(ps)
-Tree{K,V}(ps::Tuple{K,V}...) = Tree(ps)
+Tree(ps::Pair{K,V}...)  where {K, V} = Tree(ps)
+Tree(ps::Tuple{K,V}...) where {K, V} = Tree(ps)
 
 isempty(t::Tree) = isnull(t.root)
 
-function getindex{K,V}(t::Tree{K,V}, key::K)
+function getindex(t::Tree{K,V}, key::K) where {K, V}
   if isnull(t.root)
     throw(KeyError(key))
   else
@@ -54,7 +54,7 @@ function getindex{K,V}(t::Tree{K,V}, key::K)
   end
 end
 
-function setindex!{K, V}(t::Tree{K, V}, value::V, key::K)
+function setindex!(t::Tree{K, V}, value::V, key::K) where {K, V}
   if isnull(t.root)
     t.root = Nullable(TreeNode(key, value))
   else
@@ -64,7 +64,7 @@ function setindex!{K, V}(t::Tree{K, V}, value::V, key::K)
 end
 
 # Iteration interface
-function start{K, V}(t::Tree{K, V})
+function start(t::Tree{K, V}) where {K, V}
   if isnull(t.root)
     TreeNode{K, V}[]
   else
@@ -72,7 +72,7 @@ function start{K, V}(t::Tree{K, V})
   end
 end
 
-function next{K, V}(t::Tree{K, V}, stack::Vector{TreeNode{K, V}})
+function next(t::Tree{K, V}, stack::Vector{TreeNode{K, V}}) where {K, V}
 	n = pop!(stack)
 	if has_left(n)
 		push!(stack, left_child(n))
@@ -83,12 +83,12 @@ function next{K, V}(t::Tree{K, V}, stack::Vector{TreeNode{K, V}})
 	(node_key(n) => node_value(n)), stack
 end
 
-done{K, V}(t::Tree{K, V}, stack::Vector{TreeNode{K, V}}) = isempty(stack)
+done(t::Tree{K, V}, stack::Vector{TreeNode{K, V}}) where {K, V} = isempty(stack)
 
 iteratorsize(t::Tree) =  Base.SizeUnknown()
 
 
-function show{K, V}(io::IO, t::Tree{K, V})
+function show(io::IO, t::Tree{K, V}) where {K, V}
   xs = collect(t)
   len = length(xs)
   println(io, "Tree{$K, $V} with $len entries:")

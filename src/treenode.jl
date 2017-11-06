@@ -11,7 +11,7 @@ export  TreeNode,
         search
 
 "A tree node with a key and value"
-type TreeNode{K, V}
+mutable struct TreeNode{K, V}
   key::K
   value::V
 
@@ -19,19 +19,19 @@ type TreeNode{K, V}
   left::Nullable{TreeNode{K, V}}
   right::Nullable{TreeNode{K, V}}
 
-  function TreeNode(key::K, value::V)
+  function TreeNode{K, V}(key, value) where {K, V}
     null = Nullable{TreeNode{K, V}}()
     new(key, value, null, null, null)
   end
 end
 
-TreeNode{K, V}(key::K, value::V) = TreeNode{K, V}(key, value)
+TreeNode(key::K, value::V) where {K, V} = TreeNode{K, V}(key, value)
 
 "Key is the value we use to index our data with in the tree"
-node_key{K, V}(n::TreeNode{K, V})   = n.key
+node_key(n::TreeNode{K, V}) where {K, V}  = n.key
 
 "The value we are storing in the tree which we retrieve by giving its key"
-node_value{K, V}(n::TreeNode{K, V}) = n.value
+node_value(n::TreeNode{K, V}) where {K, V} = n.value
 node_parent(n::TreeNode) = get(n.parent)
 left_child(n::TreeNode)  = get(n.left)
 right_child(n::TreeNode) = get(n.right)
@@ -110,7 +110,7 @@ function show(io::IO, n::TreeNode, depth::Integer)
   end
 end
 
-function show{K, V}(io::IO, node_or_null::Nullable{TreeNode{K, V}}, depth::Integer)
+function show(io::IO, node_or_null::Nullable{TreeNode{K, V}}, depth::Integer) where {K, V}
   if isnull(node_or_null)
     print(io, "  "^depth)
     println(io, "null")
@@ -119,7 +119,7 @@ function show{K, V}(io::IO, node_or_null::Nullable{TreeNode{K, V}}, depth::Integ
   end
 end
 
-function show{K, V}(io::IO, n::TreeNode{K, V})
+function show(io::IO, n::TreeNode{K, V}) where {K, V}
   if has_children(n)
     show(io, n, 1)
   else
@@ -132,7 +132,7 @@ Adds or replaces a node.
 If node with given key already exists,
 it will replace previous value in that node.
 """
-function add!{K, V}(root::TreeNode{K, V}, child::TreeNode{K, V})
+function add!(root::TreeNode{K, V}, child::TreeNode{K, V}) where {K, V}
   if node_key(child) == node_key(root)
     root.value = node_value(child)
   elseif node_key(child) < node_key(root)
@@ -151,7 +151,7 @@ function add!{K, V}(root::TreeNode{K, V}, child::TreeNode{K, V})
 end
 
 "Find node containg key. Returns a nullable object"
-function search{K, V}(root::TreeNode{K, V}, key::K)
+function search(root::TreeNode{K, V}, key::K) where {K, V}
   if node_key(root) == key
 		return Nullable(root)
 	elseif key < node_key(root)
