@@ -19,7 +19,7 @@ include("testdata.jl")
     @test t["one"] == 10
   end
 
-  function test_data{K, V}(tester::Function, data::Vector{Vector{Tuple{K, V}}})
+  function test_data(tester::Function, data::Vector{Vector{Tuple{K, V}}}) where {K, V}
     for xs in data
       t = Tree(xs)
       d = Dict(xs)
