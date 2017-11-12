@@ -40,13 +40,13 @@ function set_parent!(child::TreeNode, parent::TreeNode)
   child.parent = Nullable(parent)
 end
 
-function detach_left_child{K, V}(parent::TreeNode{K, V})
+function detach_left_child(parent::TreeNode{K, V}) where {K, V}
     if has_left(parent)
         left_child(parent).parent = Nullable{TreeNode{K, V}}()
     end
 end
 
-function detach_right_child{K, V}(parent::TreeNode{K, V})
+function detach_right_child(parent::TreeNode{K, V}) where {K, V}
     if has_right(parent)
         right_child(parent).parent = Nullable{TreeNode{K, V}}()
     end
@@ -54,13 +54,13 @@ end
 
 
 "Give the parent node a left child node, updating parent pointer and existing left child"
-function set_left_child!{K, V}(parent::TreeNode{K, V}, child::TreeNode{K, V})
+function set_left_child!(parent::TreeNode{K, V}, child::TreeNode{K, V}) where {K, V}
     detach_left_child(parent)
     parent.left = Nullable(child)
     child.parent = Nullable(parent)
 end
 
-function set_left_child!{K, V}(parent::TreeNode{K, V}, child::Nullable{TreeNode{K, V}})
+function set_left_child!(parent::TreeNode{K, V}, child::Nullable{TreeNode{K, V}}) where {K, V}
     if !isnull(child)
         set_left_child!(parent, get(child))
     else
@@ -71,13 +71,13 @@ function set_left_child!{K, V}(parent::TreeNode{K, V}, child::Nullable{TreeNode{
 end
 
 "Give the parent node a right child node, updating parent pointer and existing right child"
-function set_right_child!{K, V}(parent::TreeNode{K, V}, child::TreeNode{K, V})
+function set_right_child!(parent::TreeNode{K, V}, child::TreeNode{K, V}) where {K, V}
     detach_right_child(parent)
     parent.right = Nullable(child)
     child.parent = Nullable(parent)
 end
 
-function set_right_child!{K, V}(parent::TreeNode{K, V}, child::Nullable{TreeNode{K, V}})
+function set_right_child!(parent::TreeNode{K, V}, child::Nullable{TreeNode{K, V}}) where {K, V}
     if !isnull(child)
         set_right_child!(parent, get(child))
     else
